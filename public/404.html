@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting…</title>
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <script>
+      // GitHub Pages serves this file for unknown paths.
+      // Redirect to the SPA entry, preserving the path in the hash.
+      (function () {
+        var l = window.location;
+        var path = l.pathname.replace(/\/index\.html$/, "");
+        var target = l.origin + path + "/#" + (l.pathname + l.search + l.hash);
+        l.replace(target);
+      })();
+    </script>
+  </body>
+</html>
