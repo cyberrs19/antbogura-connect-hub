@@ -126,13 +126,13 @@ const HeroSection = () => {
             {features.map((feature, index) => (
               <div
                 key={feature.title}
-                className="bg-background p-6 rounded-2xl border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 group animate-fade-in"
+                className="bg-background p-6 rounded-2xl border border-border hover:border-primary/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out group animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                  <feature.icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors" />
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ease-out">
+                  <feature.icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                 </div>
-                <h3 className="font-semibold text-lg text-foreground mb-2">
+                <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
                   {feature.title}
                 </h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
