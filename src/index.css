@@ -111,11 +111,27 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+    @apply transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-2xl;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 ease-out hover:shadow-[0_0_30px_hsl(var(--primary)/0.3)];
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-300 ease-out hover:scale-105;
+  }
+
+  .hover-brightness {
+    @apply transition-all duration-300 ease-out hover:brightness-110;
   }
 
   .glass-effect {
     @apply bg-background/80 backdrop-blur-md;
+  }
+
+  .smooth-transition {
+    @apply transition-all duration-300 ease-out;
   }
 }
 
