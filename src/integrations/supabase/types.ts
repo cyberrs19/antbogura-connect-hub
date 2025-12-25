@@ -60,8 +60,10 @@ export type Database = {
           phone: string
           sms_sent: boolean | null
           status: Database["public"]["Enums"]["request_status"]
+          status_notes: string | null
           upazila: string | null
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           address?: string | null
@@ -75,8 +77,10 @@ export type Database = {
           phone: string
           sms_sent?: boolean | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_notes?: string | null
           upazila?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           address?: string | null
@@ -90,8 +94,10 @@ export type Database = {
           phone?: string
           sms_sent?: boolean | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_notes?: string | null
           upazila?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -105,6 +111,8 @@ export type Database = {
           phone: string
           sms_sent: boolean | null
           status: Database["public"]["Enums"]["request_status"]
+          status_notes: string | null
+          updated_by: string | null
         }
         Insert: {
           created_at?: string
@@ -115,6 +123,8 @@ export type Database = {
           phone: string
           sms_sent?: boolean | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_notes?: string | null
+          updated_by?: string | null
         }
         Update: {
           created_at?: string
@@ -125,6 +135,8 @@ export type Database = {
           phone?: string
           sms_sent?: boolean | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_notes?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -178,7 +190,9 @@ export type Database = {
           problem_type: string
           sms_sent: boolean | null
           status: Database["public"]["Enums"]["request_status"]
+          status_notes: string | null
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           created_at?: string
@@ -190,7 +204,9 @@ export type Database = {
           problem_type: string
           sms_sent?: boolean | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_notes?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           created_at?: string
@@ -202,7 +218,42 @@ export type Database = {
           problem_type?: string
           sms_sent?: boolean | null
           status?: Database["public"]["Enums"]["request_status"]
+          status_notes?: string | null
           updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

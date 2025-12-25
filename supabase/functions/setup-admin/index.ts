@@ -24,12 +24,18 @@ Deno.serve(async (req) => {
     // Check if request has email/password in body (for adding new employee)
     let adminEmail = "admin@admin.com";
     let adminPassword = "admin123";
+    let employeeName = "";
+    let employeePhone = "";
+    let isEmployee = false;
 
     try {
       const body = await req.json();
       if (body?.email && body?.password) {
         adminEmail = body.email;
         adminPassword = body.password;
+        employeeName = body.name || "";
+        employeePhone = body.phone || "";
+        isEmployee = body.isEmployee || false;
       }
     } catch {
       // No body or invalid JSON - use defaults for initial setup
@@ -78,27 +84,46 @@ Deno.serve(async (req) => {
       console.log("User created:", userId);
     }
 
-    // Check if admin role already assigned
+    // Check if role already assigned
     const { data: existingRole } = await supabase
       .from("user_roles")
       .select("*")
       .eq("user_id", userId!)
-      .eq("role", "admin")
       .single();
 
     if (!existingRole) {
-      // Assign admin role
+      // Assign role (admin for default, or based on isEmployee flag)
+      const roleToAssign = isEmployee ? "admin" : "admin"; // All employees get admin role for now
       const { error: roleError } = await supabase.from("user_roles").insert({
         user_id: userId!,
-        role: "admin",
+        role: roleToAssign,
       });
 
       if (roleError) {
-        throw new Error(`Failed to assign admin role: ${roleError.message}`);
+        throw new Error(`Failed to assign role: ${roleError.message}`);
       }
-      console.log("Admin role assigned");
+      console.log("Role assigned:", roleToAssign);
     } else {
-      console.log("Admin role already assigned");
+      console.log("Role already assigned");
+    }
+
+    // Create or update profile if employee details provided
+    if (isEmployee && (employeeName || employeePhone)) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({
+          user_id: userId!,
+          full_name: employeeName,
+          phone: employeePhone,
+          email: adminEmail,
+          role: "employee",
+        }, { onConflict: "user_id" });
+
+      if (profileError) {
+        console.error("Failed to create profile:", profileError.message);
+      } else {
+        console.log("Profile created/updated");
+      }
     }
 
     return new Response(
@@ -106,6 +131,7 @@ Deno.serve(async (req) => {
         success: true,
         message: adminEmail === "admin@admin.com" ? "Admin user setup complete" : "Employee added successfully",
         email: adminEmail,
+        userId: userId,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
