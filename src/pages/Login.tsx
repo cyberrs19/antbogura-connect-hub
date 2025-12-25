@@ -38,11 +38,8 @@ const Login = () => {
 
   useEffect(() => {
     if (!isLoading && user && !requiresMfa) {
-      if (isAdmin) {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      // Always redirect to admin page after login
+      navigate("/admin");
     }
   }, [user, isAdmin, isLoading, navigate, requiresMfa]);
 
