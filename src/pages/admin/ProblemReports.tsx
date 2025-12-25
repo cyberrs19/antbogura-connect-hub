@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Loader2, Eye, Check, X, Clock } from "lucide-react";
+import { Loader2, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,9 +20,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { Tables } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+import StatusUpdateDialog from "@/components/admin/StatusUpdateDialog";
 
-type ProblemReport = Tables<"problem_reports">;
+interface ProblemReport {
+  id: string;
+  name: string;
+  phone: string;
+  customer_id: string | null;
+  problem_type: string;
+  description: string;
+  status: string;
+  status_notes: string | null;
+  updated_by: string | null;
+  sms_sent: boolean | null;
+  created_at: string;
+  updated_at: string;
+  updated_by_name?: string;
+}
+
 type RequestStatus = "pending" | "in_progress" | "complete" | "cancelled";
 
 const statusColors: Record<RequestStatus, string> = {
@@ -41,8 +57,10 @@ const problemTypeLabels: Record<string, string> = {
 };
 
 const ProblemReports = () => {
+  const { user } = useAuth();
   const [reports, setReports] = useState<ProblemReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ProblemReport | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
@@ -61,7 +79,23 @@ const ProblemReports = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setReports(data || []);
+
+      // Fetch updater names from profiles
+      const reportsWithNames = await Promise.all(
+        (data || []).map(async (report) => {
+          if (report.updated_by) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("full_name")
+              .eq("user_id", report.updated_by)
+              .single();
+            return { ...report, updated_by_name: profile?.full_name || "Unknown" };
+          }
+          return { ...report, updated_by_name: undefined };
+        })
+      );
+
+      setReports(reportsWithNames);
     } catch (error) {
       console.error("Error fetching reports:", error);
       toast({
@@ -78,12 +112,19 @@ const ProblemReports = () => {
     fetchReports();
   }, [filterStatus]);
 
-  const updateStatus = async (id: string, status: RequestStatus) => {
+  const updateStatus = async (status: RequestStatus, notes: string) => {
+    if (!selectedReport || !user) return;
+    
+    setIsUpdating(true);
     try {
       const { error } = await supabase
         .from("problem_reports")
-        .update({ status })
-        .eq("id", id);
+        .update({ 
+          status,
+          status_notes: notes || null,
+          updated_by: user.id,
+        })
+        .eq("id", selectedReport.id);
 
       if (error) throw error;
 
@@ -101,6 +142,8 @@ const ProblemReports = () => {
         title: "Error",
         description: "Failed to update status.",
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -164,6 +207,11 @@ const ProblemReports = () => {
                           {problemTypeLabels[report.problem_type] || report.problem_type}
                         </span>
                       </p>
+                      {report.updated_by_name && (
+                        <p className="text-xs text-muted-foreground">
+                          Updated by: <span className="font-medium">{report.updated_by_name}</span>
+                        </p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         {format(new Date(report.created_at), "PPp")}
                       </p>
@@ -184,7 +232,7 @@ const ProblemReports = () => {
         )}
 
         <Dialog open={!!selectedReport} onOpenChange={() => setSelectedReport(null)}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Problem Report Details</DialogTitle>
             </DialogHeader>
@@ -220,43 +268,19 @@ const ProblemReports = () => {
                     {format(new Date(selectedReport.created_at), "PPpp")}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Update Status</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={() => updateStatus(selectedReport.id, "pending")}
-                    >
-                      <Clock className="w-4 h-4" /> Pending
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={() => updateStatus(selectedReport.id, "in_progress")}
-                    >
-                      <Loader2 className="w-4 h-4" /> In Progress
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={() => updateStatus(selectedReport.id, "complete")}
-                    >
-                      <Check className="w-4 h-4" /> Complete
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1 text-destructive"
-                      onClick={() => updateStatus(selectedReport.id, "cancelled")}
-                    >
-                      <X className="w-4 h-4" /> Cancel
-                    </Button>
+                {selectedReport.status_notes && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Previous Notes</p>
+                    <p className="font-medium bg-muted p-2 rounded">{selectedReport.status_notes}</p>
                   </div>
-                </div>
+                )}
+                {selectedReport.updated_by_name && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Last Updated By</p>
+                    <p className="font-medium">{selectedReport.updated_by_name}</p>
+                  </div>
+                )}
+                <StatusUpdateDialog onUpdateStatus={updateStatus} isUpdating={isUpdating} />
               </div>
             )}
           </DialogContent>

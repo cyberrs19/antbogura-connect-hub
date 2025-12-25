@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Loader2, Eye, Check, X, Clock } from "lucide-react";
+import { Loader2, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,9 +20,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { Tables } from "@/integrations/supabase/types";
+import { useAuth } from "@/contexts/AuthContext";
+import StatusUpdateDialog from "@/components/admin/StatusUpdateDialog";
 
-type ConnectionRequest = Tables<"connection_requests">;
+interface ConnectionRequest {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  address: string | null;
+  package_name: string | null;
+  district: string | null;
+  upazila: string | null;
+  message: string | null;
+  status: string;
+  status_notes: string | null;
+  updated_by: string | null;
+  sms_sent: boolean | null;
+  created_at: string;
+  updated_at: string;
+  updated_by_name?: string;
+}
+
 type RequestStatus = "pending" | "in_progress" | "complete" | "cancelled";
 
 const statusColors: Record<RequestStatus, string> = {
@@ -40,8 +59,10 @@ const statusMessages: Record<RequestStatus, string> = {
 };
 
 const ConnectionRequests = () => {
+  const { user } = useAuth();
   const [requests, setRequests] = useState<ConnectionRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ConnectionRequest | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
@@ -60,7 +81,23 @@ const ConnectionRequests = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setRequests(data || []);
+
+      // Fetch updater names from profiles
+      const requestsWithNames = await Promise.all(
+        (data || []).map(async (request) => {
+          if (request.updated_by) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("full_name")
+              .eq("user_id", request.updated_by)
+              .single();
+            return { ...request, updated_by_name: profile?.full_name || "Unknown" };
+          }
+          return { ...request, updated_by_name: undefined };
+        })
+      );
+
+      setRequests(requestsWithNames);
     } catch (error) {
       console.error("Error fetching requests:", error);
       toast({
@@ -93,17 +130,24 @@ const ConnectionRequests = () => {
     }
   };
 
-  const updateStatus = async (id: string, status: RequestStatus, phone: string) => {
+  const updateStatus = async (status: RequestStatus, notes: string) => {
+    if (!selectedRequest || !user) return;
+    
+    setIsUpdating(true);
     try {
       const { error } = await supabase
         .from("connection_requests")
-        .update({ status })
-        .eq("id", id);
+        .update({ 
+          status,
+          status_notes: notes || null,
+          updated_by: user.id,
+        })
+        .eq("id", selectedRequest.id);
 
       if (error) throw error;
 
       // Send SMS notification (fire-and-forget)
-      void sendStatusSms(phone, status, id);
+      void sendStatusSms(selectedRequest.phone, status, selectedRequest.id);
 
       toast({
         title: "Status Updated",
@@ -119,6 +163,8 @@ const ConnectionRequests = () => {
         title: "Error",
         description: "Failed to update status.",
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -187,6 +233,11 @@ const ConnectionRequests = () => {
                           <span className="font-medium">{request.package_name}</span>
                         </p>
                       )}
+                      {request.updated_by_name && (
+                        <p className="text-xs text-muted-foreground">
+                          Updated by: <span className="font-medium">{request.updated_by_name}</span>
+                        </p>
+                      )}
                       <p className="text-xs text-muted-foreground">
                         {format(new Date(request.created_at), "PPp")}
                       </p>
@@ -207,7 +258,7 @@ const ConnectionRequests = () => {
         )}
 
         <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Connection Request Details</DialogTitle>
             </DialogHeader>
@@ -249,43 +300,19 @@ const ConnectionRequests = () => {
                     <p className="font-medium">{selectedRequest.message}</p>
                   </div>
                 )}
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Update Status (SMS will be sent)</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={() => updateStatus(selectedRequest.id, "pending", selectedRequest.phone)}
-                    >
-                      <Clock className="w-4 h-4" /> Pending
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={() => updateStatus(selectedRequest.id, "in_progress", selectedRequest.phone)}
-                    >
-                      <Loader2 className="w-4 h-4" /> In Progress
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1"
-                      onClick={() => updateStatus(selectedRequest.id, "complete", selectedRequest.phone)}
-                    >
-                      <Check className="w-4 h-4" /> Complete
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1 text-destructive"
-                      onClick={() => updateStatus(selectedRequest.id, "cancelled", selectedRequest.phone)}
-                    >
-                      <X className="w-4 h-4" /> Cancel
-                    </Button>
+                {selectedRequest.status_notes && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Previous Notes</p>
+                    <p className="font-medium bg-muted p-2 rounded">{selectedRequest.status_notes}</p>
                   </div>
-                </div>
+                )}
+                {selectedRequest.updated_by_name && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Last Updated By</p>
+                    <p className="font-medium">{selectedRequest.updated_by_name}</p>
+                  </div>
+                )}
+                <StatusUpdateDialog onUpdateStatus={updateStatus} isUpdating={isUpdating} />
               </div>
             )}
           </DialogContent>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Loader2, UserPlus, Key, Mail, Smartphone, Trash2, Shield, ShieldCheck, ShieldOff, Laptop } from "lucide-react";
+import { Loader2, UserPlus, Key, Mail, Smartphone, Trash2, Shield, ShieldCheck, ShieldOff, Laptop, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
-import type { Tables } from "@/integrations/supabase/types";
 import TwoFactorSetup from "@/components/auth/TwoFactorSetup";
 import { RecoveryCodesManager } from "@/components/auth/RecoveryCodes";
 import { logActivity } from "@/lib/activity-logger";
@@ -25,9 +24,38 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-type DeviceSession = Tables<"device_sessions">;
-type TrustedDevice = Tables<"trusted_devices">;
+interface DeviceSession {
+  id: string;
+  user_id: string;
+  device_name: string;
+  device_type: string;
+  browser: string | null;
+  os: string | null;
+  ip_address: string | null;
+  last_active: string;
+  is_current: boolean | null;
+  created_at: string;
+}
+
+interface TrustedDevice {
+  id: string;
+  user_id: string;
+  device_token: string;
+  device_name: string;
+  browser: string | null;
+  os: string | null;
+  expires_at: string;
+  created_at: string;
+}
 
 interface MfaFactor {
   id: string;
@@ -37,13 +65,33 @@ interface MfaFactor {
   created_at: string;
 }
 
+interface Employee {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  phone: string | null;
+  email: string | null;
+  role: string | null;
+  created_at: string;
+}
+
 const Settings = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { toast } = useToast();
 
   // Add Employee State
-  const [newEmployee, setNewEmployee] = useState({ email: "", password: "", confirmPassword: "" });
+  const [newEmployee, setNewEmployee] = useState({ 
+    name: "", 
+    phone: "", 
+    email: "", 
+    password: "", 
+    confirmPassword: "" 
+  });
   const [isAddingEmployee, setIsAddingEmployee] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
+  const [isDeletingEmployee, setIsDeletingEmployee] = useState(false);
 
   // Password Change State
   const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
@@ -67,6 +115,23 @@ const Settings = () => {
   // Trusted Devices State
   const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>([]);
   const [isLoadingTrusted, setIsLoadingTrusted] = useState(true);
+
+  const fetchEmployees = useCallback(async () => {
+    if (!isAdmin) return;
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setEmployees(data || []);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      setIsLoadingEmployees(false);
+    }
+  }, [isAdmin]);
 
   const fetchSessions = async () => {
     if (!user) return;
@@ -120,7 +185,10 @@ const Settings = () => {
     fetchSessions();
     fetchMfaFactors();
     fetchTrustedDevices();
-  }, [user, fetchMfaFactors, fetchTrustedDevices]);
+    if (isAdmin) {
+      fetchEmployees();
+    }
+  }, [user, fetchMfaFactors, fetchTrustedDevices, isAdmin, fetchEmployees]);
 
   const handleDisableMfa = async () => {
     setIsDisabling(true);
@@ -269,18 +337,38 @@ const Settings = () => {
       return;
     }
 
+    if (!newEmployee.name.trim()) {
+      toast({ variant: "destructive", title: "Error", description: "Employee name is required" });
+      return;
+    }
+
     setIsAddingEmployee(true);
 
     try {
       // Create user via edge function (server-side)
       const { data, error } = await supabase.functions.invoke("setup-admin", {
-        body: { email: newEmployee.email, password: newEmployee.password },
+        body: { 
+          email: newEmployee.email, 
+          password: newEmployee.password,
+          name: newEmployee.name,
+          phone: newEmployee.phone,
+          isEmployee: true,
+        },
       });
 
       if (error) throw error;
 
+      if (user) {
+        await logActivity({
+          userId: user.id,
+          eventType: "employee_added",
+          description: `Added new employee: ${newEmployee.name}`,
+        });
+      }
+
       toast({ title: "Success", description: "Employee added successfully. They can now login." });
-      setNewEmployee({ email: "", password: "", confirmPassword: "" });
+      setNewEmployee({ name: "", phone: "", email: "", password: "", confirmPassword: "" });
+      fetchEmployees();
     } catch (error: any) {
       console.error("Error adding employee:", error);
       toast({
@@ -290,6 +378,42 @@ const Settings = () => {
       });
     } finally {
       setIsAddingEmployee(false);
+    }
+  };
+
+  const handleDeleteEmployee = async () => {
+    if (!employeeToDelete) return;
+    
+    setIsDeletingEmployee(true);
+    try {
+      // Delete profile first
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", employeeToDelete.id);
+
+      if (profileError) throw profileError;
+
+      // Delete user role
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", employeeToDelete.user_id);
+
+      if (roleError) console.error("Error deleting role:", roleError);
+
+      toast({ title: "Success", description: "Employee removed successfully" });
+      setEmployeeToDelete(null);
+      fetchEmployees();
+    } catch (error: any) {
+      console.error("Error deleting employee:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to remove employee",
+      });
+    } finally {
+      setIsDeletingEmployee(false);
     }
   };
 
@@ -383,102 +507,189 @@ const Settings = () => {
     }
   };
 
+  // Determine which tabs to show based on role
+  const tabItems = isAdmin
+    ? [
+        { value: "employees", label: "Employees", icon: Users },
+        { value: "password", label: "Password", icon: Key },
+        { value: "email", label: "Email", icon: Mail },
+        { value: "security", label: "2FA", icon: Shield },
+        { value: "devices", label: "Devices", icon: Smartphone },
+      ]
+    : [
+        { value: "password", label: "Password", icon: Key },
+        { value: "email", label: "Email", icon: Mail },
+        { value: "security", label: "2FA", icon: Shield },
+        { value: "devices", label: "Devices", icon: Smartphone },
+      ];
+
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-muted-foreground mt-1">Manage your account and employees</p>
+          <p className="text-muted-foreground mt-1">
+            {isAdmin ? "Manage your account and employees" : "Manage your account settings"}
+          </p>
         </div>
 
-        <Tabs defaultValue="employees" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
-            <TabsTrigger value="employees" className="gap-2">
-              <UserPlus className="w-4 h-4 hidden sm:inline" />
-              Employees
-            </TabsTrigger>
-            <TabsTrigger value="password" className="gap-2">
-              <Key className="w-4 h-4 hidden sm:inline" />
-              Password
-            </TabsTrigger>
-            <TabsTrigger value="email" className="gap-2">
-              <Mail className="w-4 h-4 hidden sm:inline" />
-              Email
-            </TabsTrigger>
-            <TabsTrigger value="security" className="gap-2">
-              <Shield className="w-4 h-4 hidden sm:inline" />
-              2FA
-            </TabsTrigger>
-            <TabsTrigger value="devices" className="gap-2">
-              <Smartphone className="w-4 h-4 hidden sm:inline" />
-              Devices
-            </TabsTrigger>
+        <Tabs defaultValue={isAdmin ? "employees" : "password"} className="w-full">
+          <TabsList className={`grid w-full lg:w-[600px]`} style={{ gridTemplateColumns: `repeat(${tabItems.length}, 1fr)` }}>
+            {tabItems.map((item) => (
+              <TabsTrigger key={item.value} value={item.value} className="gap-2">
+                <item.icon className="w-4 h-4 hidden sm:inline" />
+                {item.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          {/* Add Employee */}
-          <TabsContent value="employees">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  Add New Employee
-                </CardTitle>
-                <CardDescription>
-                  Create a new admin account for an employee
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddEmployee} className="space-y-4 max-w-md">
-                  <div className="space-y-2">
-                    <Label htmlFor="emp-email">Email Address</Label>
-                    <Input
-                      id="emp-email"
-                      type="email"
-                      placeholder="employee@example.com"
-                      value={newEmployee.email}
-                      onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="emp-password">Password</Label>
-                    <Input
-                      id="emp-password"
-                      type="password"
-                      placeholder="Min 6 characters"
-                      value={newEmployee.password}
-                      onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="emp-confirm">Confirm Password</Label>
-                    <Input
-                      id="emp-confirm"
-                      type="password"
-                      placeholder="Confirm password"
-                      value={newEmployee.confirmPassword}
-                      onChange={(e) => setNewEmployee({ ...newEmployee, confirmPassword: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <Button type="submit" disabled={isAddingEmployee}>
-                    {isAddingEmployee ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Adding...
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        Add Employee
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          {/* Add Employee - Admin Only */}
+          {isAdmin && (
+            <TabsContent value="employees" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserPlus className="w-5 h-5" />
+                    Add New Employee
+                  </CardTitle>
+                  <CardDescription>
+                    Create a new admin account for an employee
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleAddEmployee} className="space-y-4 max-w-md">
+                    <div className="space-y-2">
+                      <Label htmlFor="emp-name">Full Name *</Label>
+                      <Input
+                        id="emp-name"
+                        type="text"
+                        placeholder="John Doe"
+                        value={newEmployee.name}
+                        onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="emp-phone">Phone Number</Label>
+                      <Input
+                        id="emp-phone"
+                        type="tel"
+                        placeholder="01XXXXXXXXX"
+                        value={newEmployee.phone}
+                        onChange={(e) => setNewEmployee({ ...newEmployee, phone: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="emp-email">Email Address *</Label>
+                      <Input
+                        id="emp-email"
+                        type="email"
+                        placeholder="employee@example.com"
+                        value={newEmployee.email}
+                        onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="emp-password">Password *</Label>
+                      <Input
+                        id="emp-password"
+                        type="password"
+                        placeholder="Min 6 characters"
+                        value={newEmployee.password}
+                        onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="emp-confirm">Confirm Password *</Label>
+                      <Input
+                        id="emp-confirm"
+                        type="password"
+                        placeholder="Confirm password"
+                        value={newEmployee.confirmPassword}
+                        onChange={(e) => setNewEmployee({ ...newEmployee, confirmPassword: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" disabled={isAddingEmployee}>
+                      {isAddingEmployee ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Adding...
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Add Employee
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* Employee List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5" />
+                    Employee List
+                  </CardTitle>
+                  <CardDescription>
+                    All registered employees
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingEmployees ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    </div>
+                  ) : employees.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No employees found</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Added</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {employees.map((employee) => (
+                            <TableRow key={employee.id}>
+                              <TableCell className="font-medium">
+                                {employee.full_name || "N/A"}
+                              </TableCell>
+                              <TableCell>{employee.phone || "N/A"}</TableCell>
+                              <TableCell>{employee.email || "N/A"}</TableCell>
+                              <TableCell>
+                                {format(new Date(employee.created_at), "PP")}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-destructive hover:text-destructive"
+                                  onClick={() => setEmployeeToDelete(employee)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           {/* Change Password */}
           <TabsContent value="password">
@@ -604,7 +815,7 @@ const Settings = () => {
                             {session.device_type === "mobile" ? (
                               <Smartphone className="w-5 h-5 text-primary" />
                             ) : (
-                              <Smartphone className="w-5 h-5 text-primary" />
+                              <Laptop className="w-5 h-5 text-primary" />
                             )}
                           </div>
                           <div>
@@ -774,6 +985,36 @@ const Settings = () => {
                   </>
                 ) : (
                   "Disable 2FA"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Delete Employee Confirmation Dialog */}
+        <AlertDialog open={!!employeeToDelete} onOpenChange={() => setEmployeeToDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Remove Employee?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to remove {employeeToDelete?.full_name || "this employee"}? 
+                This will remove their access but won't delete their account.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteEmployee}
+                disabled={isDeletingEmployee}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeletingEmployee ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Removing...
+                  </>
+                ) : (
+                  "Remove Employee"
                 )}
               </AlertDialogAction>
             </AlertDialogFooter>
