@@ -42,7 +42,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-card border-b flex items-center justify-between px-4 z-50">
         <div className="flex items-center gap-2">
           <Wifi className="w-6 h-6 text-primary" />
-          <span className="font-bold text-primary">NetNest Admin</span>
+          <span className="font-bold text-primary">ANT Bogura</span>
         </div>
         <Button
           variant="ghost"
@@ -64,7 +64,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         <div className="p-6 border-b hidden lg:block">
           <div className="flex items-center gap-2">
             <Wifi className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold text-primary">NetNest Admin</span>
+            <span className="text-xl font-bold text-primary">ANT Bogura</span>
           </div>
         </div>
         
