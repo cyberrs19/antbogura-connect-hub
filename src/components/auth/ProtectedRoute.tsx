@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
-  const { user, isAdmin, isManager, isLoading } = useAuth();
+  const { user, userRole, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -22,8 +22,9 @@ const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps)
     return <Navigate to="/login" replace />;
   }
 
-  // Admin-only routes should also be accessible to managers
-  if (requireAdmin && !(isAdmin || isManager)) {
+  // Any user with a role (admin, manager, or user) can access protected routes
+  // This means all employees can access the dashboard
+  if (requireAdmin && !userRole) {
     return <Navigate to="/" replace />;
   }
 
