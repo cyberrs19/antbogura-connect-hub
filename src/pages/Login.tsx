@@ -38,8 +38,8 @@ const Login = () => {
 
   useEffect(() => {
     if (!isLoading && user && !requiresMfa) {
-      // Always redirect to admin page after login
-      navigate("/admin");
+      // Admins + managers go to admin dashboard, regular users go to home
+      navigate(isAdmin ? "/admin" : "/");
     }
   }, [user, isAdmin, isLoading, navigate, requiresMfa]);
 
@@ -165,9 +165,9 @@ const Login = () => {
             <Wifi className="w-8 h-8 text-primary" />
             <span className="text-2xl font-bold text-primary">ANT Bogura</span>
           </div>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
+          <CardTitle className="text-2xl">Sign in</CardTitle>
           <CardDescription>
-            Sign in to access the admin dashboard
+            Sign in to continue
           </CardDescription>
         </CardHeader>
         <CardContent>
