@@ -27,7 +27,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [requiresMfa, setRequiresMfa] = useState(false);
   const [mfaUserId, setMfaUserId] = useState<string | null>(null);
-  const { signIn, user, isAdmin, isLoading } = useAuth();
+  const { signIn, user, userRole, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -38,10 +38,10 @@ const Login = () => {
 
   useEffect(() => {
     if (!isLoading && user && !requiresMfa) {
-      // Admins + managers go to admin dashboard, regular users go to home
-      navigate(isAdmin ? "/admin" : "/");
+      // All employees (users with a role) go to admin dashboard
+      navigate(userRole ? "/admin" : "/");
     }
-  }, [user, isAdmin, isLoading, navigate, requiresMfa]);
+  }, [user, userRole, isLoading, navigate, requiresMfa]);
 
   const handleLogin = async (data: LoginFormData) => {
     setIsSubmitting(true);
