@@ -26,6 +26,16 @@ const TwoFactorSetup = ({ onComplete, onCancel }: TwoFactorSetupProps) => {
   const handleStartEnrollment = async () => {
     setIsEnrolling(true);
     try {
+      // If the user previously enrolled, unenroll first so the new issuer/name is applied
+      const { data: existingFactors, error: listError } = await supabase.auth.mfa.listFactors();
+      if (listError) throw listError;
+
+      const existingTotp = existingFactors.totp || [];
+      for (const factor of existingTotp) {
+        // Best-effort cleanup
+        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
         friendlyName: "ANTBogura",

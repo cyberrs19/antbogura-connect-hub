@@ -40,7 +40,7 @@ export default class AppErrorBoundary extends React.Component<Props, State> {
 
             <a
               className="mt-6 w-fit underline text-primary hover:text-primary/90"
-              href="#/"
+              href="/"
             >
               Go to Home
             </a>
