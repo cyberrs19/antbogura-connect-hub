@@ -28,7 +28,7 @@ const TwoFactorSetup = ({ onComplete, onCancel }: TwoFactorSetupProps) => {
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "Authenticator App",
+        friendlyName: "ANTBogura",
       });
 
       if (error) throw error;

@@ -1,5 +1,8 @@
 project_id = "wtdjlfwzakgwdallsiii"
 
+[auth.mfa]
+totp.issuer = "ANTBogura"
+
 [functions.send-sms]
 verify_jwt = false
 
