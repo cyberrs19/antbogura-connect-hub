@@ -86,10 +86,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      
+
+      // If the user was deleted/disabled server-side, invalidate the local session
+      if (session) {
+        const { data: userData, error } = await supabase.auth.getUser();
+        if (error || !userData?.user) {
+          await supabase.auth.signOut();
+          setIsAdmin(false);
+          setIsManager(false);
+          setUserRole(null);
+          setMfaLevel(null);
+          setIsLoading(false);
+          return;
+        }
+      }
+
       if (session?.user) {
         fetchUserRole(session.user.id).then((role) => {
           setUserRole(role);

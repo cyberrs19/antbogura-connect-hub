@@ -509,21 +509,12 @@ const Settings = () => {
     
     setIsDeletingEmployee(true);
     try {
-      // Delete profile first
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", employeeToDelete.id);
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: { targetUserId: employeeToDelete.user_id },
+      });
 
-      if (profileError) throw profileError;
-
-      // Delete user role
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", employeeToDelete.user_id);
-
-      if (roleError) console.error("Error deleting role:", roleError);
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Failed to delete user");
 
       if (user) {
         await logActivity({
