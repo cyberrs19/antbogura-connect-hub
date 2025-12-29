@@ -23,6 +23,9 @@ Deno.serve(async (req) => {
 
     // Identify requesting user (JWT)
     const authHeader = req.headers.get("Authorization");
+    console.log("Auth header present:", !!authHeader);
+    console.log("Auth header value:", authHeader ? authHeader.substring(0, 50) + "..." : "none");
+    
     if (!authHeader) {
       console.log("No authorization header");
       return new Response(JSON.stringify({ success: false, error: "No authorization header" }), {
