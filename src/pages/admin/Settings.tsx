@@ -117,6 +117,10 @@ const Settings = () => {
   const [employeeToEdit, setEmployeeToEdit] = useState<Employee | null>(null);
   const [editingRole, setEditingRole] = useState<"admin" | "manager" | "user">("user");
   const [isUpdatingRole, setIsUpdatingRole] = useState(false);
+  
+  // Orphan User Cleanup State  
+  const [orphanUserId, setOrphanUserId] = useState("");
+  const [isCleaningOrphan, setIsCleaningOrphan] = useState(false);
 
   // Password Change State
   const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
@@ -539,6 +543,43 @@ const Settings = () => {
     }
   };
 
+  const handleCleanupOrphanUser = async () => {
+    if (!orphanUserId.trim()) {
+      toast({ variant: "destructive", title: "Error", description: "Please enter a user ID" });
+      return;
+    }
+
+    setIsCleaningOrphan(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("cleanup-orphan-users", {
+        body: { userId: orphanUserId.trim() },
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Failed to delete orphan user");
+
+      if (user) {
+        await logActivity({
+          userId: user.id,
+          eventType: "employee_removed",
+          description: `Deleted orphan auth user: ${orphanUserId}`,
+        });
+      }
+
+      toast({ title: "Success", description: "Orphan user deleted successfully" });
+      setOrphanUserId("");
+    } catch (error: any) {
+      console.error("Error cleaning up orphan user:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to delete orphan user",
+      });
+    } finally {
+      setIsCleaningOrphan(false);
+    }
+  };
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -871,6 +912,46 @@ const Settings = () => {
                   )}
                 </CardContent>
               </Card>
+
+              {/* Admin Only: Cleanup Orphan Users */}
+              {isAdmin && (
+                <Card className="border-destructive/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-destructive">
+                      <Trash2 className="w-5 h-5" />
+                      Cleanup Orphan Auth Users
+                    </CardTitle>
+                    <CardDescription>
+                      Delete auth users that exist in the system but don't appear in the user list (e.g., partially deleted users). 
+                      Enter the user ID to delete.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex gap-2 max-w-lg">
+                      <Input
+                        placeholder="Enter orphan user ID (UUID)"
+                        value={orphanUserId}
+                        onChange={(e) => setOrphanUserId(e.target.value)}
+                      />
+                      <Button
+                        variant="destructive"
+                        onClick={handleCleanupOrphanUser}
+                        disabled={isCleaningOrphan || !orphanUserId.trim()}
+                      >
+                        {isCleaningOrphan ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "Delete"
+                        )}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      To find orphan user IDs, check auth logs or contact support.
+                      The user ID for rs@rs.com is: <code className="bg-muted px-1 rounded">7ffa6df5-6807-4622-b895-eec3cd6e6fb4</code>
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           )}
 
