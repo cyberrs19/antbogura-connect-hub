@@ -513,11 +513,20 @@ const Settings = () => {
     
     setIsDeletingEmployee(true);
     try {
+      // Ensure we have a valid session before calling the function
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData.session) {
+        throw new Error("Your session has expired. Please log in again.");
+      }
+
       const { data, error } = await supabase.functions.invoke("delete-user", {
         body: { targetUserId: employeeToDelete.user_id },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Function invoke error:", error);
+        throw new Error(error.message || "Failed to call delete function");
+      }
       if (!data?.success) throw new Error(data?.error || "Failed to delete user");
 
       if (user) {
