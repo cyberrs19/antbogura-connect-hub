@@ -13,14 +13,23 @@ import {
 } from "@/components/ui/accordion";
 
 const BillPayment = () => {
-  const [copied, setCopied] = useState(false);
+  const [copiedMerchant, setCopiedMerchant] = useState(false);
+  const [copiedPersonal, setCopiedPersonal] = useState(false);
   const merchantNumber = "01332-147787";
+  const personalNumber = "01775647118";
 
   const copyMerchantNumber = () => {
     navigator.clipboard.writeText(merchantNumber);
-    setCopied(true);
+    setCopiedMerchant(true);
     toast.success("Merchant number copied!");
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopiedMerchant(false), 2000);
+  };
+
+  const copyPersonalNumber = () => {
+    navigator.clipboard.writeText(personalNumber);
+    setCopiedPersonal(true);
+    toast.success("Personal number copied!");
+    setTimeout(() => setCopiedPersonal(false), 2000);
   };
 
   const faqs = [
@@ -70,7 +79,7 @@ const BillPayment = () => {
       {/* Payment Methods Summary */}
       <section className="section-padding bg-background">
         <div className="container-custom mx-auto">
-          {/* bKash Payment Section */}
+          {/* bKash Merchant Payment Section */}
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-8">
             <div className="flex items-center gap-4 mb-6">
               <img 
@@ -79,7 +88,7 @@ const BillPayment = () => {
                 className="w-14 h-14 rounded-xl object-cover"
               />
               <div className="flex-1">
-                <h3 className="font-bold text-2xl text-foreground">BKash Payment</h3>
+                <h3 className="font-bold text-2xl text-foreground">BKash Merchant Payment</h3>
                 <div className="flex items-center gap-2">
                   <p className="text-muted-foreground">Merchant Account: {merchantNumber}</p>
                   <button
@@ -87,7 +96,7 @@ const BillPayment = () => {
                     className="p-1.5 hover:bg-muted rounded-md transition-colors"
                     title="Copy merchant number"
                   >
-                    {copied ? (
+                    {copiedMerchant ? (
                       <Check className="w-4 h-4 text-green-500" />
                     ) : (
                       <Copy className="w-4 h-4 text-muted-foreground" />
@@ -136,6 +145,72 @@ const BillPayment = () => {
             </div>
           </div>
 
+          {/* bKash Send Money (Personal) Payment Section */}
+          <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-8">
+            <div className="flex items-center gap-4 mb-6">
+              <img 
+                src={bkashLogo} 
+                alt="bKash Logo" 
+                className="w-14 h-14 rounded-xl object-cover"
+              />
+              <div className="flex-1">
+                <h3 className="font-bold text-2xl text-foreground">BKash Send Money</h3>
+                <div className="flex items-center gap-2">
+                  <p className="text-muted-foreground">Personal Account: {personalNumber}</p>
+                  <button
+                    onClick={copyPersonalNumber}
+                    className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                    title="Copy personal number"
+                  >
+                    {copiedPersonal ? (
+                      <Check className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-background p-4 rounded-xl border border-border">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 1</div>
+                <div className="text-2xl font-bold text-foreground mb-2">*247#</div>
+                <p className="text-sm text-muted-foreground">Dial *247# on your bKash activated mobile phone</p>
+              </div>
+              <div className="bg-background p-4 rounded-xl border border-border">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 2</div>
+                <div className="text-lg font-bold text-foreground mb-2">Select Send Money</div>
+                <p className="text-sm text-muted-foreground">Choose option 1. Send Money from the menu</p>
+              </div>
+              <div className="bg-background p-4 rounded-xl border border-border">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 3</div>
+                <div className="text-lg font-bold text-foreground mb-2">01775647118</div>
+                <p className="text-sm text-muted-foreground">Enter ANT Bogura bKash Personal Number</p>
+              </div>
+              <div className="bg-background p-4 rounded-xl border border-border">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 4</div>
+                <div className="text-lg font-bold text-foreground mb-2">Enter Amount</div>
+                <p className="text-sm text-muted-foreground">Enter your bill amount</p>
+              </div>
+              <div className="bg-background p-4 rounded-xl border border-border">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 5</div>
+                <div className="text-lg font-bold text-foreground mb-2">Reference</div>
+                <p className="text-sm text-muted-foreground">Enter your Customer ID as reference</p>
+              </div>
+              <div className="bg-background p-4 rounded-xl border border-border">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 6</div>
+                <div className="text-lg font-bold text-foreground mb-2">Enter PIN</div>
+                <p className="text-sm text-muted-foreground">Enter your bKash PIN to confirm payment</p>
+              </div>
+              <div className="bg-background p-4 rounded-xl border border-border lg:col-span-2">
+                <div className="text-sm font-semibold text-[#E2136E] mb-2">Step 7</div>
+                <div className="text-lg font-bold text-foreground mb-2">Payment Successful!</div>
+                <p className="text-sm text-muted-foreground">You will receive a confirmation SMS with TrxID</p>
+              </div>
+            </div>
+          </div>
+
           {/* Nagad Payment Section */}
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-12">
             <div className="flex items-center gap-4 mb-6">
@@ -153,7 +228,7 @@ const BillPayment = () => {
                     className="p-1.5 hover:bg-muted rounded-md transition-colors"
                     title="Copy merchant number"
                   >
-                    {copied ? (
+                    {copiedMerchant ? (
                       <Check className="w-4 h-4 text-green-500" />
                     ) : (
                       <Copy className="w-4 h-4 text-muted-foreground" />
