@@ -318,7 +318,7 @@ const BillPayment = () => {
               <div className="bg-background p-4 rounded-xl border border-border">
                 <div className="text-sm font-semibold text-[#F6921E] mb-2">Step 2</div>
                 <div className="text-lg font-bold text-foreground mb-2">Select Send Money</div>
-                <p className="text-sm text-muted-foreground">Choose option 1. Send Money from the menu</p>
+                <p className="text-sm text-muted-foreground">Choose option 2. Send Money from the menu</p>
               </div>
               <div className="bg-background p-4 rounded-xl border border-border">
                 <div className="text-sm font-semibold text-[#F6921E] mb-2">Step 3</div>
