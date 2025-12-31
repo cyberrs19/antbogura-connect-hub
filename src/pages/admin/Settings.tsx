@@ -148,10 +148,17 @@ const Settings = () => {
   const fetchEmployees = useCallback(async () => {
     if (!canManageEmployees) return;
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
+
+      // Managers can only see users/employees, not admins or other managers
+      if (isManager && !isAdmin) {
+        query = query.eq("role", "employee");
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setEmployees(data || []);
@@ -160,7 +167,7 @@ const Settings = () => {
     } finally {
       setIsLoadingEmployees(false);
     }
-  }, [canManageEmployees]);
+  }, [canManageEmployees, isManager, isAdmin]);
 
   const fetchSessions = async () => {
     if (!user) return;
