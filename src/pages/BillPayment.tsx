@@ -38,6 +38,18 @@ const BillPayment = () => {
       answer: "The merchant number for both bKash and Nagad payments is 01332-147787."
     },
     {
+      question: "What is the personal number for Send Money payments?",
+      answer: "The personal number for Send Money (bKash and Nagad) is 01775647118."
+    },
+    {
+      question: "What is the difference between Merchant Payment and Send Money?",
+      answer: "Merchant Payment uses *247# (bKash) or *167# (Nagad) and selects 'Payment' option, while Send Money uses the same codes but selects the 'Send Money' option. Both methods are accepted for bill payment."
+    },
+    {
+      question: "Which payment method should I use - Merchant or Send Money?",
+      answer: "Both methods are equally valid. You can use whichever is more convenient for you. Merchant Payment goes to 01332-147787, and Send Money goes to 01775647118."
+    },
+    {
       question: "What should I enter as the reference?",
       answer: "Enter your Customer ID as the reference. This helps us identify your payment and update your account."
     },
@@ -59,7 +71,7 @@ const BillPayment = () => {
     },
     {
       question: "Is there any additional charge for mobile payment?",
-      answer: "No, there is no additional charge for paying via bKash or Nagad."
+      answer: "No, there is no additional charge for paying via bKash or Nagad, whether you use Merchant Payment or Send Money."
     }
   ];
   return (
