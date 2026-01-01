@@ -1,10 +1,11 @@
 import Layout from "@/components/layout/Layout";
-import { CheckCircle, Copy, Check } from "lucide-react";
+import { CheckCircle, Copy, Check, Loader2 } from "lucide-react";
 import paymentInfoImage from "@/assets/payment-info.jpg";
 import bkashLogo from "@/assets/bkash-logo.svg";
 import nagadLogo from "@/assets/nagad-logo.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
   AccordionContent,
@@ -12,11 +13,58 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+interface PaymentVisibility {
+  bkash_merchant: boolean;
+  bkash_personal: boolean;
+  nagad_merchant: boolean;
+  nagad_personal: boolean;
+}
+
 const BillPayment = () => {
   const [copiedMerchant, setCopiedMerchant] = useState(false);
   const [copiedPersonal, setCopiedPersonal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [visibility, setVisibility] = useState<PaymentVisibility>({
+    bkash_merchant: true,
+    bkash_personal: true,
+    nagad_merchant: true,
+    nagad_personal: true,
+  });
   const merchantNumber = "01332-147787";
   const personalNumber = "01775647118";
+
+  useEffect(() => {
+    const fetchVisibility = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("payment_settings")
+          .select("payment_type, is_visible");
+
+        if (error) throw error;
+
+        if (data) {
+          const newVisibility: PaymentVisibility = {
+            bkash_merchant: true,
+            bkash_personal: true,
+            nagad_merchant: true,
+            nagad_personal: true,
+          };
+          data.forEach((item) => {
+            if (item.payment_type in newVisibility) {
+              newVisibility[item.payment_type as keyof PaymentVisibility] = item.is_visible;
+            }
+          });
+          setVisibility(newVisibility);
+        }
+      } catch (error) {
+        console.error("Error fetching payment visibility:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVisibility();
+  }, []);
 
   const copyMerchantNumber = () => {
     navigator.clipboard.writeText(merchantNumber);
@@ -91,7 +139,14 @@ const BillPayment = () => {
       {/* Payment Methods Summary */}
       <section className="section-padding bg-background">
         <div className="container-custom mx-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <>
           {/* bKash Merchant Payment Section */}
+          {visibility.bkash_merchant && (
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-8">
             <div className="flex items-center gap-4 mb-6">
               <img 
@@ -156,8 +211,10 @@ const BillPayment = () => {
               </div>
             </div>
           </div>
+          )}
 
           {/* bKash Send Money (Personal) Payment Section */}
+          {visibility.bkash_personal && (
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-8">
             <div className="flex items-center gap-4 mb-6">
               <img 
@@ -222,8 +279,10 @@ const BillPayment = () => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Nagad Merchant Payment Section */}
+          {visibility.nagad_merchant && (
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-8">
             <div className="flex items-center gap-4 mb-6">
               <img 
@@ -293,8 +352,10 @@ const BillPayment = () => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Nagad Send Money (Personal) Payment Section */}
+          {visibility.nagad_personal && (
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border mb-12">
             <div className="flex items-center gap-4 mb-6">
               <img 
@@ -359,6 +420,9 @@ const BillPayment = () => {
               </div>
             </div>
           </div>
+          )}
+          </>
+          )}
 
           {/* Payment Instructions Image */}
           <div className="bg-card p-6 md:p-8 rounded-2xl border border-border">
