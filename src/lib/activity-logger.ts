@@ -15,7 +15,8 @@ export type ActivityEventType =
   | "session_removed"
   | "employee_added"
   | "employee_removed"
-  | "status_changed";
+  | "status_changed"
+  | "payment_settings_changed";
 
 interface LogActivityParams {
   userId: string;
@@ -61,6 +62,7 @@ export const getActivityIcon = (eventType: ActivityEventType): string => {
     employee_added: "👤",
     employee_removed: "🚫",
     status_changed: "📋",
+    payment_settings_changed: "💳",
   };
   return icons[eventType] || "📝";
 };
@@ -81,6 +83,7 @@ export const getActivityLabel = (eventType: ActivityEventType): string => {
     employee_added: "Employee Added",
     employee_removed: "Employee Removed",
     status_changed: "Status Changed",
+    payment_settings_changed: "Payment Settings",
   };
   return labels[eventType] || eventType;
 };

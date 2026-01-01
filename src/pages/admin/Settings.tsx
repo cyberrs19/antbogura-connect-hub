@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Loader2, UserPlus, Key, Mail, Smartphone, Trash2, Shield, ShieldCheck, ShieldOff, Laptop, Users, Pencil } from "lucide-react";
+import { Loader2, UserPlus, Key, Mail, Smartphone, Trash2, Shield, ShieldCheck, ShieldOff, Laptop, Users, Pencil, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,6 +48,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+
+interface PaymentSetting {
+  id: string;
+  payment_type: string;
+  is_visible: boolean;
+  updated_at: string;
+}
 
 interface DeviceSession {
   id: string;
@@ -145,6 +153,11 @@ const Settings = () => {
   const [trustedDevices, setTrustedDevices] = useState<TrustedDevice[]>([]);
   const [isLoadingTrusted, setIsLoadingTrusted] = useState(true);
 
+  // Payment Settings State
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSetting[]>([]);
+  const [isLoadingPayments, setIsLoadingPayments] = useState(true);
+  const [isUpdatingPayment, setIsUpdatingPayment] = useState<string | null>(null);
+
   const fetchEmployees = useCallback(async () => {
     if (!canManageEmployees) return;
     try {
@@ -217,14 +230,73 @@ const Settings = () => {
     }
   }, [user]);
 
+  const fetchPaymentSettings = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("payment_settings")
+        .select("*")
+        .order("payment_type");
+
+      if (error) throw error;
+      setPaymentSettings(data || []);
+    } catch (error) {
+      console.error("Error fetching payment settings:", error);
+    } finally {
+      setIsLoadingPayments(false);
+    }
+  }, []);
+
+  const handleTogglePayment = async (paymentType: string, currentValue: boolean) => {
+    setIsUpdatingPayment(paymentType);
+    try {
+      const { error } = await supabase
+        .from("payment_settings")
+        .update({ 
+          is_visible: !currentValue, 
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id 
+        })
+        .eq("payment_type", paymentType);
+
+      if (error) throw error;
+
+      if (user) {
+        await logActivity({
+          userId: user.id,
+          eventType: "payment_settings_changed",
+          description: `${!currentValue ? "Enabled" : "Disabled"} ${getPaymentLabel(paymentType)} payment option`,
+        });
+      }
+
+      toast({ title: "Success", description: `Payment option ${!currentValue ? "enabled" : "disabled"}` });
+      fetchPaymentSettings();
+    } catch (error: any) {
+      console.error("Error updating payment setting:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to update payment setting" });
+    } finally {
+      setIsUpdatingPayment(null);
+    }
+  };
+
+  const getPaymentLabel = (type: string): string => {
+    switch (type) {
+      case "bkash_merchant": return "bKash Merchant Payment";
+      case "bkash_personal": return "bKash Send Money (Personal)";
+      case "nagad_merchant": return "Nagad Merchant Payment";
+      case "nagad_personal": return "Nagad Send Money (Personal)";
+      default: return type;
+    }
+  };
+
   useEffect(() => {
     fetchSessions();
     fetchMfaFactors();
     fetchTrustedDevices();
     if (canManageEmployees) {
       fetchEmployees();
+      fetchPaymentSettings();
     }
-  }, [user, fetchMfaFactors, fetchTrustedDevices, canManageEmployees, fetchEmployees]);
+  }, [user, fetchMfaFactors, fetchTrustedDevices, canManageEmployees, fetchEmployees, fetchPaymentSettings]);
 
   const handleDisableMfa = async () => {
     setIsDisabling(true);
@@ -690,6 +762,7 @@ const Settings = () => {
   const tabItems = canManageEmployees
     ? [
         { value: "employees", label: "Employees", icon: Users },
+        { value: "payments", label: "Payments", icon: CreditCard },
         { value: "password", label: "Password", icon: Key },
         { value: "email", label: "Email", icon: Mail },
         { value: "security", label: "2FA", icon: Shield },
@@ -968,6 +1041,75 @@ const Settings = () => {
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+          )}
+
+          {/* Payment Settings - Admin and Manager */}
+          {canManageEmployees && (
+            <TabsContent value="payments">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="w-5 h-5" />
+                    Payment Options Visibility
+                  </CardTitle>
+                  <CardDescription>
+                    Control which payment options are displayed on the Bill Payment page
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingPayments ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {paymentSettings.map((setting) => (
+                        <div
+                          key={setting.id}
+                          className="flex items-center justify-between p-4 rounded-lg border bg-card"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                setting.payment_type.includes("bkash")
+                                  ? "bg-[#E2136E]/10"
+                                  : "bg-[#F6921E]/10"
+                              }`}
+                            >
+                              {setting.payment_type.includes("bkash") ? (
+                                <span className="text-[#E2136E] font-bold text-sm">bK</span>
+                              ) : (
+                                <span className="text-[#F6921E] font-bold text-sm">N</span>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium">{getPaymentLabel(setting.payment_type)}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {setting.payment_type.includes("personal")
+                                  ? "Send Money option"
+                                  : "Merchant Payment option"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant={setting.is_visible ? "default" : "secondary"}>
+                              {setting.is_visible ? "Visible" : "Hidden"}
+                            </Badge>
+                            <Switch
+                              checked={setting.is_visible}
+                              onCheckedChange={() =>
+                                handleTogglePayment(setting.payment_type, setting.is_visible)
+                              }
+                              disabled={isUpdatingPayment === setting.payment_type}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </TabsContent>
           )}
 
