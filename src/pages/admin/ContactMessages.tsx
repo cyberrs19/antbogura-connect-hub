@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { Loader2, Eye, Search } from "lucide-react";
+import { Loader2, Eye, Search, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -53,7 +63,9 @@ const ContactMessages = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ContactMessage | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { toast } = useToast();
@@ -165,6 +177,48 @@ const ContactMessages = () => {
     }
   };
 
+  const deleteMessage = async () => {
+    if (!deleteTarget || !user) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("contact_messages")
+        .delete()
+        .eq("id", deleteTarget.id);
+
+      if (error) throw error;
+
+      await logActivity({
+        userId: user.id,
+        eventType: "record_deleted",
+        description: `Deleted contact message from ${deleteTarget.name}`,
+        metadata: {
+          table: "contact_messages",
+          recordId: deleteTarget.id,
+          recordName: deleteTarget.name,
+        },
+      });
+
+      toast({
+        title: "Deleted",
+        description: "Contact message has been deleted.",
+      });
+
+      fetchMessages();
+      setDeleteTarget(null);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete message.",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <AdminLayout>
@@ -242,14 +296,24 @@ const ContactMessages = () => {
                         {format(new Date(message.created_at), "PPp")}
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedMessage(message)}
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      View Details
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedMessage(message)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                        onClick={() => setDeleteTarget(message)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -305,6 +369,29 @@ const ContactMessages = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Contact Message</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete the message from{" "}
+                <span className="font-semibold">{deleteTarget?.name}</span>? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={deleteMessage}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AdminLayout>
   );
