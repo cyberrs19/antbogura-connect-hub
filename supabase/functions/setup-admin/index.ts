@@ -51,29 +51,41 @@ Deno.serve(async (req) => {
 
     // Check if user already exists
     const { data: existingUsers } = await supabase.auth.admin.listUsers();
-    const existingAdmin = existingUsers?.users?.find(
+    const existingUser = existingUsers?.users?.find(
       (u) => u.email === adminEmail
     );
 
     let userId: string;
 
-    if (existingAdmin) {
-      // If using default credentials, just return success
-      if (adminEmail === "admin@admin.com") {
-        userId = existingAdmin.id;
-        console.log("Admin user already exists:", userId);
+    if (existingUser) {
+      userId = existingUser.id;
+      
+      // Check if user already has a role assigned
+      const { data: existingRole } = await supabase
+        .from("user_roles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+      
+      // If user has a role, they're already set up - return error for employees, success for default admin
+      if (existingRole) {
+        if (adminEmail === "admin@admin.com") {
+          console.log("Admin user already exists:", userId);
+        } else {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: "User with this email already exists and is configured",
+            }),
+            {
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+              status: 400,
+            }
+          );
+        }
       } else {
-        // If trying to add a new employee that already exists, return error
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error: "User with this email already exists",
-          }),
-          {
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-            status: 400,
-          }
-        );
+        // Orphan user exists (in auth but no role) - we can reuse them
+        console.log("Reusing orphan auth user:", userId);
       }
     } else {
       // Create new user
