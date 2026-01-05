@@ -1,57 +1,32 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, Wifi, Zap, Tv, Gamepad2, Shield, Clock, Package, MapPin, Users, Headphones, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const pages = [
-  { name: "Packages", path: "/packages", icon: Package, description: "View our internet plans & pricing" },
-  { name: "Coverage", path: "/coverage", icon: MapPin, description: "Check service availability in your area" },
-  { name: "About Us", path: "/about", icon: Users, description: "Learn about ANT Bogura" },
-  { name: "Support", path: "/support", icon: Headphones, description: "Get help & troubleshooting" },
-  { name: "Contact", path: "/contact", icon: Mail, description: "Request a new connection" },
-];
-
-const features = [
-  {
-    icon: Wifi,
-    title: "Unlimited Data",
-    description: "No data caps or throttling. Use as much as you need.",
-  },
-  {
-    icon: Zap,
-    title: "Unlimited BDIX Speed",
-    description: "Blazing fast local content access with BDIX.",
-  },
-  {
-    icon: Tv,
-    title: "4K Streaming",
-    description: "Stream Netflix, YouTube in crystal clear 4K quality.",
-  },
-  {
-    icon: Gamepad2,
-    title: "Low Latency Gaming",
-    description: "Experience lag-free gaming with our optimized network.",
-  },
-];
-
-const whyChooseUs = [
-  {
-    icon: Shield,
-    title: "Reliable Connection",
-    description: "99.9% uptime guarantee with fiber optic infrastructure.",
-  },
-  {
-    icon: Clock,
-    title: "24/7 Support",
-    description: "Round-the-clock technical support via WhatsApp & phone.",
-  },
-  {
-    icon: Zap,
-    title: "Fast Installation",
-    description: "Get connected within 24-48 hours of your request.",
-  },
-];
-
 const HeroSection = () => {
+  const { t } = useTranslation();
+
+  const pages = [
+    { nameKey: "explore.pages.packages.name", path: "/packages", icon: Package, descKey: "explore.pages.packages.description" },
+    { nameKey: "explore.pages.coverage.name", path: "/coverage", icon: MapPin, descKey: "explore.pages.coverage.description" },
+    { nameKey: "explore.pages.about.name", path: "/about", icon: Users, descKey: "explore.pages.about.description" },
+    { nameKey: "explore.pages.support.name", path: "/support", icon: Headphones, descKey: "explore.pages.support.description" },
+    { nameKey: "explore.pages.contact.name", path: "/contact", icon: Mail, descKey: "explore.pages.contact.description" },
+  ];
+
+  const features = [
+    { icon: Wifi, titleKey: "features.unlimitedData.title", descKey: "features.unlimitedData.description" },
+    { icon: Zap, titleKey: "features.bdixSpeed.title", descKey: "features.bdixSpeed.description" },
+    { icon: Tv, titleKey: "features.streaming.title", descKey: "features.streaming.description" },
+    { icon: Gamepad2, titleKey: "features.gaming.title", descKey: "features.gaming.description" },
+  ];
+
+  const whyChooseUs = [
+    { icon: Shield, titleKey: "whyChooseUs.reliable.title", descKey: "whyChooseUs.reliable.description" },
+    { icon: Clock, titleKey: "whyChooseUs.support.title", descKey: "whyChooseUs.support.description" },
+    { icon: Zap, titleKey: "whyChooseUs.installation.title", descKey: "whyChooseUs.installation.description" },
+  ];
+
   return (
     <>
       {/* Hero */}
@@ -66,23 +41,22 @@ const HeroSection = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6 animate-fade-in">
               <Wifi className="w-4 h-4" />
-              <span className="text-sm font-medium">Trusted by 1000+ homes in Bogura</span>
+              <span className="text-sm font-medium">{t('hero.badge')}</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-6 leading-tight animate-fade-in" style={{ animationDelay: "0.1s" }}>
-              Fast & Reliable{" "}
-              <span className="text-primary">Internet</span> in Bogura
+              {t('hero.title')}{" "}
+              <span className="text-primary">{t('hero.titleHighlight')}</span> {t('hero.titleSuffix')}
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
-              Experience lightning-fast fiber internet with unlimited data, 4K streaming, 
-              and lag-free gaming. Your trusted local ISP since 2020.
+              {t('hero.subtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <Button asChild variant="hero" size="xl">
                 <Link to="/packages">
-                  View Packages
+                  {t('hero.viewPackages')}
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
@@ -92,15 +66,15 @@ const HeroSection = () => {
             <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-border animate-fade-in" style={{ animationDelay: "0.4s" }}>
               <div>
                 <p className="text-3xl md:text-4xl font-bold text-primary">1000+</p>
-                <p className="text-sm text-muted-foreground mt-1">Happy Customers</p>
+                <p className="text-sm text-muted-foreground mt-1">{t('hero.stats.customers')}</p>
               </div>
               <div>
                 <p className="text-3xl md:text-4xl font-bold text-primary">99.9%</p>
-                <p className="text-sm text-muted-foreground mt-1">Uptime</p>
+                <p className="text-sm text-muted-foreground mt-1">{t('hero.stats.uptime')}</p>
               </div>
               <div>
                 <p className="text-3xl md:text-4xl font-bold text-primary">200+</p>
-                <p className="text-sm text-muted-foreground mt-1">Mbps Max Speed</p>
+                <p className="text-sm text-muted-foreground mt-1">{t('hero.stats.speed')}</p>
               </div>
             </div>
           </div>
@@ -112,17 +86,17 @@ const HeroSection = () => {
         <div className="container-custom mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Everything You Need
+              {t('features.title')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Our packages include all the features you need for an exceptional internet experience.
+              {t('features.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <div
-                key={feature.title}
+                key={feature.titleKey}
                 className="bg-background p-6 rounded-2xl border border-border hover:border-primary/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-out group animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -130,9 +104,9 @@ const HeroSection = () => {
                   <feature.icon className="w-6 h-6 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                 </div>
                 <h3 className="font-semibold text-lg text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
-                  {feature.title}
+                  {t(feature.titleKey)}
                 </h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <p className="text-sm text-muted-foreground">{t(feature.descKey)}</p>
               </div>
             ))}
           </div>
@@ -145,18 +119,16 @@ const HeroSection = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                Why Choose <span className="text-primary">ANT Bogura</span>?
+                {t('whyChooseUs.title')} <span className="text-primary">{t('whyChooseUs.titleHighlight')}</span>?
               </h2>
               <p className="text-muted-foreground mb-8">
-                We're not just an internet service provider. We're your neighbors, 
-                committed to keeping Bogura connected with the fastest and most 
-                reliable fiber internet.
+                {t('whyChooseUs.subtitle')}
               </p>
 
               <div className="space-y-6">
                 {whyChooseUs.map((item, index) => (
                   <div
-                    key={item.title}
+                    key={item.titleKey}
                     className="flex gap-4 animate-fade-in-left"
                     style={{ animationDelay: `${index * 0.15}s` }}
                   >
@@ -165,10 +137,10 @@ const HeroSection = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">
-                        {item.title}
+                        {t(item.titleKey)}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {item.description}
+                        {t(item.descKey)}
                       </p>
                     </div>
                   </div>
@@ -177,7 +149,7 @@ const HeroSection = () => {
 
               <Button asChild variant="hero" size="lg" className="mt-8">
                 <Link to="/about">
-                  Learn More About Us
+                  {t('whyChooseUs.learnMore')}
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </Button>
@@ -202,10 +174,10 @@ const HeroSection = () => {
         <div className="container-custom mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Explore Our Website
+              {t('explore.title')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Find everything you need - from pricing to support
+              {t('explore.subtitle')}
             </p>
           </div>
 
@@ -221,9 +193,9 @@ const HeroSection = () => {
                   <page.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {page.name}
+                  {t(page.nameKey)}
                 </h3>
-                <p className="text-xs text-muted-foreground">{page.description}</p>
+                <p className="text-xs text-muted-foreground">{t(page.descKey)}</p>
               </Link>
             ))}
           </div>
@@ -234,22 +206,21 @@ const HeroSection = () => {
       <section className="section-padding bg-primary">
         <div className="container-custom mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-            Ready to Get Connected?
+            {t('cta.title')}
           </h2>
           <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers enjoying fast, reliable internet. 
-            Get started today with our affordable packages.
+            {t('cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild variant="secondary" size="xl">
               <Link to="/packages">
-                View Packages
+                {t('cta.viewPackages')}
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="xl" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
               <a href="https://wa.me/8801332147787" target="_blank" rel="noopener noreferrer">
-                Chat on WhatsApp
+                {t('cta.chatWhatsApp')}
               </a>
             </Button>
           </div>
