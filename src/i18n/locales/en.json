@@ -1,0 +1,506 @@
+{
+  "nav": {
+    "home": "Home",
+    "packages": "Packages",
+    "coverage": "Coverage",
+    "ftpLiveTv": "FTP & Live TV",
+    "billPayment": "Bill Payment",
+    "about": "About",
+    "support": "Support",
+    "contact": "Contact",
+    "getConnected": "Get Connected"
+  },
+  "hero": {
+    "badge": "Trusted by 1000+ homes in Bogura",
+    "title": "Fast & Reliable",
+    "titleHighlight": "Internet",
+    "titleSuffix": "in Bogura",
+    "subtitle": "Experience lightning-fast fiber internet with unlimited data, 4K streaming, and lag-free gaming. Your trusted local ISP since 2020.",
+    "viewPackages": "View Packages",
+    "stats": {
+      "customers": "Happy Customers",
+      "uptime": "Uptime",
+      "speed": "Mbps Max Speed"
+    }
+  },
+  "features": {
+    "title": "Everything You Need",
+    "subtitle": "Our packages include all the features you need for an exceptional internet experience.",
+    "unlimitedData": {
+      "title": "Unlimited Data",
+      "description": "No data caps or throttling. Use as much as you need."
+    },
+    "bdixSpeed": {
+      "title": "Unlimited BDIX Speed",
+      "description": "Blazing fast local content access with BDIX."
+    },
+    "streaming": {
+      "title": "4K Streaming",
+      "description": "Stream Netflix, YouTube in crystal clear 4K quality."
+    },
+    "gaming": {
+      "title": "Low Latency Gaming",
+      "description": "Experience lag-free gaming with our optimized network."
+    }
+  },
+  "whyChooseUs": {
+    "title": "Why Choose",
+    "titleHighlight": "ANT Bogura",
+    "subtitle": "We're not just an internet service provider. We're your neighbors, committed to keeping Bogura connected with the fastest and most reliable fiber internet.",
+    "reliable": {
+      "title": "Reliable Connection",
+      "description": "99.9% uptime guarantee with fiber optic infrastructure."
+    },
+    "support": {
+      "title": "24/7 Support",
+      "description": "Round-the-clock technical support via WhatsApp & phone."
+    },
+    "installation": {
+      "title": "Fast Installation",
+      "description": "Get connected within 24-48 hours of your request."
+    },
+    "learnMore": "Learn More About Us"
+  },
+  "explore": {
+    "title": "Explore Our Website",
+    "subtitle": "Find everything you need - from pricing to support",
+    "pages": {
+      "packages": {
+        "name": "Packages",
+        "description": "View our internet plans & pricing"
+      },
+      "coverage": {
+        "name": "Coverage",
+        "description": "Check service availability in your area"
+      },
+      "about": {
+        "name": "About Us",
+        "description": "Learn about ANT Bogura"
+      },
+      "support": {
+        "name": "Support",
+        "description": "Get help & troubleshooting"
+      },
+      "contact": {
+        "name": "Contact",
+        "description": "Request a new connection"
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to Get Connected?",
+    "subtitle": "Join thousands of satisfied customers enjoying fast, reliable internet. Get started today with our affordable packages.",
+    "viewPackages": "View Packages",
+    "chatWhatsApp": "Chat on WhatsApp"
+  },
+  "footer": {
+    "description": "Your trusted local fiber internet provider in Bogura, Bangladesh. Fast, reliable, and affordable internet for every home and business.",
+    "quickLinks": "Quick Links",
+    "services": "Our Services",
+    "contactUs": "Contact Us",
+    "servicesList": {
+      "homeBroadband": "Home Broadband",
+      "businessInternet": "Business Internet",
+      "gamingPackages": "Gaming Packages",
+      "enterpriseSolutions": "Enterprise Solutions",
+      "fiberOptic": "Fiber Optic Connection"
+    },
+    "copyright": "© {year} ANT Bogura. All rights reserved. | Developed by Rezuwan"
+  },
+  "packages": {
+    "hero": {
+      "title": "Choose Your",
+      "titleHighlight": "Perfect Plan",
+      "subtitle": "Simple, transparent pricing with no hidden fees. All packages include unlimited data and premium features."
+    },
+    "features": {
+      "unlimitedData": "Unlimited Data",
+      "bdixSpeed": "Unlimited BDIX Speed",
+      "streaming": "4K Streaming Support",
+      "gaming": "Low Latency Gaming",
+      "support": "24/7 Support",
+      "router": "Free Router Setup"
+    },
+    "badges": {
+      "popular": "Most Popular",
+      "gaming": "Gaming",
+      "enterprise": "Enterprise"
+    },
+    "perMonth": "/month",
+    "vatIncluded": "VAT Included",
+    "getStarted": "Get Started",
+    "comparison": {
+      "title": "Package Comparison",
+      "package": "Package",
+      "speed": "Speed",
+      "price": "Price (VAT Included)",
+      "action": "Action",
+      "orderNow": "Order Now"
+    },
+    "needHelp": {
+      "title": "Need Help Choosing?",
+      "subtitle": "Our team is ready to help you find the perfect package for your needs. Contact us for a free consultation.",
+      "chatWithUs": "Chat With Us"
+    }
+  },
+  "coverage": {
+    "hero": {
+      "title": "Our",
+      "titleHighlight": "Coverage Area",
+      "subtitle": "ANT Bogura provides high-speed fiber internet across Bogura city. Check if your area is covered."
+    },
+    "selectDistrict": "Select District",
+    "districtCoverage": "{district} District Coverage",
+    "coveredThanas": "Covered Upazila/Thanas in {district}",
+    "mapNote": "* The highlighted area shows our current fiber network coverage in Bogura.",
+    "notInArea": {
+      "title": "Don't see your area?",
+      "subtitle": "We're constantly expanding our network. Contact us to check availability in your area or request coverage.",
+      "requestCoverage": "Request Coverage"
+    },
+    "expandingSoon": {
+      "title": "Expanding Soon!",
+      "subtitle": "We're actively expanding our fiber network to new areas in Bogura. Stay tuned for updates or contact us to express your interest.",
+      "contactUs": "Contact Us",
+      "whatsappUs": "WhatsApp Us"
+    }
+  },
+  "ftpLiveTv": {
+    "title": "FTP & Live TV",
+    "subtitle": "Access our FTP movie server and live TV channels exclusively for ANT Bogura customers.",
+    "ftp": {
+      "title": "FTP / Movie Server",
+      "description": "Browse and download movies, TV shows, and more from our local FTP server.",
+      "openServer": "Open Movie Server"
+    },
+    "liveTv": {
+      "title": "Live TV",
+      "description": "Watch live TV channels directly from your browser.",
+      "local": "Live TV (Local)",
+      "external": "Live TV (External)"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "About",
+      "titleHighlight": "ANT Bogura",
+      "subtitle": "Your trusted local fiber internet provider, connecting Bogura to the digital world with speed, reliability, and care."
+    },
+    "story": {
+      "title": "Our Story",
+      "p1": "Founded in 2020, ANT Bogura started with a simple mission: to provide affordable, high-speed internet to every home and business in Bogura. What began as a small local initiative has grown into a trusted name in the community.",
+      "p2": "We understand the importance of reliable internet in today's connected world. Whether it's for education, work, entertainment, or staying connected with loved ones, we're committed to keeping you online.",
+      "p3": "Our team of dedicated professionals works round the clock to ensure you get the best internet experience. With fiber optic technology and 24/7 support, we're here to serve you.",
+      "since": "Since 2020",
+      "serving": "Serving Bogura with Pride"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "To provide fast, reliable, and affordable internet services to every household and business in Bogura, bridging the digital divide and empowering our community to thrive in the digital age."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To become the most trusted and loved internet service provider in Bogura, known for our exceptional service quality, customer care, and contribution to the community's digital transformation."
+    },
+    "values": {
+      "title": "Our Core Values",
+      "fastReliable": {
+        "title": "Fast & Reliable",
+        "description": "We deliver consistent high-speed internet that you can count on."
+      },
+      "customerFirst": {
+        "title": "Customer First",
+        "description": "Your satisfaction is our priority. We're here 24/7 to help."
+      },
+      "trustedService": {
+        "title": "Trusted Service",
+        "description": "Transparent pricing, honest service, no hidden surprises."
+      },
+      "localExcellence": {
+        "title": "Local Excellence",
+        "description": "Proudly serving Bogura with the best internet experience."
+      }
+    },
+    "stats": {
+      "customers": "Happy Customers",
+      "uptime": "Uptime",
+      "support": "Support",
+      "years": "Years of Service"
+    },
+    "cta": {
+      "title": "Join Our Growing Family",
+      "subtitle": "Experience the ANT Bogura difference. Get connected today and enjoy fast, reliable internet with the best customer service.",
+      "viewPackages": "View Packages",
+      "contactUs": "Contact Us"
+    }
+  },
+  "support": {
+    "hero": {
+      "title": "Help &",
+      "titleHighlight": "Support",
+      "subtitle": "Having trouble? Find quick solutions to common problems or contact our 24/7 support team for assistance."
+    },
+    "immediate": {
+      "title": "Need Immediate Help?",
+      "whatsapp": "WhatsApp",
+      "whatsappDesc": "Fastest response",
+      "phone": "Phone",
+      "phoneDesc": "24/7 available",
+      "email": "Email",
+      "emailDesc": "Detailed queries"
+    },
+    "commonProblems": {
+      "title": "Common Problems & Solutions",
+      "subtitle": "Try these troubleshooting steps before contacting support. Most issues can be resolved with simple fixes.",
+      "noInternet": {
+        "title": "No Internet Connection",
+        "solutions": [
+          "Check if your router is powered on and all lights are normal",
+          "Restart your router by unplugging it for 30 seconds",
+          "Check if cables are properly connected",
+          "Verify if there's a service outage in your area"
+        ]
+      },
+      "slowSpeed": {
+        "title": "Slow Internet Speed",
+        "solutions": [
+          "Run a speed test at fast.com or speedtest.net",
+          "Move closer to your router for better WiFi signal",
+          "Check if other devices are consuming bandwidth",
+          "Restart your router and device",
+          "Update your device's network drivers"
+        ]
+      },
+      "wifiNotWorking": {
+        "title": "WiFi Not Working",
+        "solutions": [
+          "Check if WiFi is enabled on your device",
+          "Verify the WiFi password is correct",
+          "Restart your router",
+          "Check for WiFi interference from other devices",
+          "Try connecting to 2.4GHz or 5GHz band"
+        ]
+      },
+      "frequentDisconnections": {
+        "title": "Frequent Disconnections",
+        "solutions": [
+          "Check cable connections for any damage",
+          "Update router firmware if available",
+          "Move router away from other electronic devices",
+          "Check for overheating of router",
+          "Contact support for line quality check"
+        ]
+      },
+      "stillHavingIssues": {
+        "title": "Still Having Issues?",
+        "subtitle": "If the above solutions don't work, our technician will visit your location.",
+        "requestVisit": "Request Technician Visit"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Find answers to common questions about our service, billing, and technical support.",
+      "questions": {
+        "billPayment": {
+          "q": "How do I pay my monthly bill?",
+          "a": "You can pay your monthly bill through bKash, Nagad, Rocket, or bank transfer. Our collection agent may also visit your location for cash collection. Contact support for payment details."
+        },
+        "installation": {
+          "q": "What is the installation process?",
+          "a": "After you request a connection, our team will survey your location within 24 hours. Installation typically takes 2-3 hours and is completely free for standard setups."
+        },
+        "packageChange": {
+          "q": "Can I upgrade or downgrade my package?",
+          "a": "Yes! You can change your package at any time. The change will take effect from your next billing cycle. Contact support to request a package change."
+        },
+        "bdix": {
+          "q": "What is BDIX and why is it unlimited?",
+          "a": "BDIX (Bangladesh Internet Exchange) is the local internet exchange. All local content including Facebook, YouTube (cache), local websites, and gaming servers are accessible at maximum speed without counting towards your package limit."
+        },
+        "router": {
+          "q": "Do you provide a router?",
+          "a": "Yes, we provide a dual-band WiFi router with every new connection at no extra cost. The router remains our property and should be returned if you discontinue the service."
+        },
+        "technicalIssues": {
+          "q": "What happens if I face technical issues?",
+          "a": "Our 24/7 support team is always ready to help. You can reach us via WhatsApp, phone, or email. For most issues, we can provide remote assistance. For hardware issues, our technician will visit within 24 hours."
+        },
+        "contract": {
+          "q": "Is there a contract or commitment period?",
+          "a": "No long-term contracts! Our service is month-to-month. You can cancel anytime with 15 days notice."
+        }
+      }
+    },
+    "cta": {
+      "title": "We're Here to Help",
+      "subtitle": "Our support team is available 24/7 to ensure you stay connected. Don't hesitate to reach out for any assistance.",
+      "chatNow": "Chat Now"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Get In",
+      "titleHighlight": "Touch",
+      "subtitle": "Have questions or facing issues? We're here to help. Reach out to us through any of the channels below."
+    },
+    "info": {
+      "title": "Contact Information",
+      "subtitle": "Our team is available 24/7 to assist you with any queries or concerns. Choose your preferred contact method.",
+      "whatsapp": "WhatsApp",
+      "phone": "Phone",
+      "email": "Email",
+      "location": "Location",
+      "supportHours": "Support Hours",
+      "available247": "24/7 Available",
+      "quickChat": "Quick Chat on WhatsApp"
+    },
+    "tabs": {
+      "contactUs": "Contact Us",
+      "reportProblem": "Report Problem"
+    },
+    "form": {
+      "sendMessage": {
+        "title": "Send Us a Message",
+        "subtitle": "Have a question or feedback? We'd love to hear from you."
+      },
+      "reportProblem": {
+        "title": "Report Internet Problem",
+        "subtitle": "Facing connectivity issues? Let us know and we'll fix it ASAP."
+      },
+      "fullName": "Full Name",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "message": "Message",
+      "customerId": "Customer ID",
+      "customerIdPlaceholder": "Your customer ID (if known)",
+      "problemType": "Problem Type",
+      "selectProblemType": "Select problem type",
+      "description": "Description",
+      "describeProblem": "Describe your problem in detail",
+      "sending": "Sending...",
+      "sendMessage": "Send Message",
+      "reporting": "Reporting...",
+      "submitReport": "Submit Report",
+      "problemTypes": {
+        "noConnection": "No Connection",
+        "slowSpeed": "Slow Speed",
+        "frequentDisconnection": "Frequent Disconnection",
+        "wifiIssue": "WiFi Issue",
+        "billing": "Billing Issue",
+        "other": "Other"
+      }
+    }
+  },
+  "billPayment": {
+    "hero": {
+      "title": "Bill",
+      "titleHighlight": "Payment",
+      "subtitle": "Pay your internet bill easily using bKash or Nagad. Follow the simple steps below."
+    },
+    "bkashMerchant": {
+      "title": "BKash Merchant Payment",
+      "merchantAccount": "Merchant Account"
+    },
+    "bkashPersonal": {
+      "title": "BKash Send Money",
+      "personalAccount": "Personal Account"
+    },
+    "nagadMerchant": {
+      "title": "Nagad Merchant Payment",
+      "merchantAccount": "Merchant Account"
+    },
+    "nagadPersonal": {
+      "title": "Nagad Send Money",
+      "personalAccount": "Personal Account"
+    },
+    "steps": {
+      "step": "Step",
+      "dial": "Dial",
+      "selectPayment": "Select Payment",
+      "selectSendMoney": "Select Send Money",
+      "enterNumber": "Enter Number",
+      "enterAmount": "Enter Amount",
+      "reference": "Reference",
+      "counterNo": "Counter No: 1",
+      "enterPin": "Enter PIN",
+      "success": "Payment Successful!",
+      "dialBkash": "Dial *247# on your bKash activated mobile phone",
+      "dialNagad": "Dial *167# on your Nagad activated mobile phone",
+      "choosePayment": "Choose option 4. Payment from the menu",
+      "chooseSendMoney": "Choose option 1. Send Money from the menu",
+      "enterMerchant": "Enter ANT Bogura Merchant Number",
+      "enterPersonal": "Enter ANT Bogura Personal Number",
+      "enterBillAmount": "Enter your bill amount",
+      "enterCustomerId": "Enter your Customer ID as reference",
+      "enterCounter": "Enter Counter No as 1",
+      "enterBkashPin": "Enter your bKash PIN to confirm payment",
+      "enterNagadPin": "Enter your Nagad PIN to confirm payment",
+      "confirmationSms": "You will receive a confirmation SMS with TrxID"
+    },
+    "importantNotes": {
+      "title": "Important Notes",
+      "notes": [
+        "Always use your Customer ID as the reference",
+        "Save the TrxID from the confirmation message",
+        "Contact us if payment doesn't reflect within 24 hours",
+        "For any payment issues, WhatsApp us with your TrxID"
+      ]
+    },
+    "faq": {
+      "title": "Bill Payment FAQs"
+    }
+  },
+  "connectionDialog": {
+    "title": "Request Connection",
+    "subtitle": "Fill in your details and we'll get back to you within 24 hours.",
+    "selectedPackage": "Selected Package",
+    "form": {
+      "fullName": "Full Name",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "district": "District",
+      "selectDistrict": "Select District",
+      "upazila": "Upazila",
+      "selectUpazila": "Select Upazila",
+      "address": "Full Address",
+      "addressPlaceholder": "House/Road/Area details",
+      "message": "Additional Message",
+      "messagePlaceholder": "Any special requirements or questions?"
+    },
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "submitRequest": "Submit Request"
+  },
+  "login": {
+    "title": "Admin Login",
+    "email": "Email Address",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing In..."
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sortBy": "Sort By",
+    "noResults": "No results found",
+    "required": "Required"
+  }
+}

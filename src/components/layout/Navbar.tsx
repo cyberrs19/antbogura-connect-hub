@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Wifi } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "Packages", path: "/packages" },
-  { name: "Coverage", path: "/coverage" },
-  { name: "FTP & Live TV", path: "/ftp-live-tv" },
-  { name: "Bill Payment", path: "/bill-payment" },
-  { name: "About", path: "/about" },
-  { name: "Support", path: "/support" },
-  { name: "Contact", path: "/contact" },
+  { nameKey: "nav.home", path: "/" },
+  { nameKey: "nav.packages", path: "/packages" },
+  { nameKey: "nav.coverage", path: "/coverage" },
+  { nameKey: "nav.ftpLiveTv", path: "/ftp-live-tv" },
+  { nameKey: "nav.billPayment", path: "/bill-payment" },
+  { nameKey: "nav.about", path: "/about" },
+  { nameKey: "nav.support", path: "/support" },
+  { nameKey: "nav.contact", path: "/contact" },
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-border">
@@ -42,15 +45,16 @@ const Navbar = () => {
                     : "text-foreground hover:bg-accent hover:shadow-sm"
                 }`}
               >
-                {link.name}
+                {t(link.nameKey)}
               </Link>
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
+          {/* CTA Button & Language Switcher */}
+          <div className="hidden lg:flex items-center gap-2">
+            <LanguageSwitcher />
             <Button asChild variant="hero" size="lg">
-              <Link to="/packages">Get Connected</Link>
+              <Link to="/packages">{t('nav.getConnected')}</Link>
             </Button>
           </div>
 
@@ -79,14 +83,17 @@ const Navbar = () => {
                       : "text-foreground hover:bg-accent"
                   }`}
                 >
-                  {link.name}
+                  {t(link.nameKey)}
                 </Link>
               ))}
-              <Button asChild variant="hero" size="lg" className="mt-2">
-                <Link to="/packages" onClick={() => setIsOpen(false)}>
-                  Get Connected
-                </Link>
-              </Button>
+              <div className="flex items-center justify-between mt-2 gap-2">
+                <LanguageSwitcher />
+                <Button asChild variant="hero" size="lg" className="flex-1">
+                  <Link to="/packages" onClick={() => setIsOpen(false)}>
+                    {t('nav.getConnected')}
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         )}

@@ -1,8 +1,27 @@
 import { forwardRef } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Wifi, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 
 const Footer = forwardRef<HTMLElement>((_, ref) => {
+  const { t } = useTranslation();
+  
+  const quickLinks = [
+    { nameKey: "nav.packages", path: "/packages" },
+    { nameKey: "nav.coverage", path: "/coverage" },
+    { nameKey: "nav.about", path: "/about" },
+    { nameKey: "nav.support", path: "/support" },
+    { nameKey: "nav.contact", path: "/contact" },
+  ];
+
+  const services = [
+    "footer.servicesList.homeBroadband",
+    "footer.servicesList.businessInternet",
+    "footer.servicesList.gamingPackages",
+    "footer.servicesList.enterpriseSolutions",
+    "footer.servicesList.fiberOptic",
+  ];
+
   return (
     <footer ref={ref} className="bg-primary text-primary-foreground">
       <div className="container-custom mx-auto section-padding">
@@ -16,22 +35,21 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
               <span className="text-xl font-bold">ANT Bogura</span>
             </Link>
             <p className="text-primary-foreground/80 text-sm leading-relaxed">
-              Your trusted local fiber internet provider in Bogura, Bangladesh.
-              Fast, reliable, and affordable internet for every home and business.
+              {t('footer.description')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-3">
-              {["Packages", "Coverage", "About", "Support", "Contact"].map((link) => (
-                <li key={link}>
+              {quickLinks.map((link) => (
+                <li key={link.path}>
                   <Link
-                    to={`/${link.toLowerCase()}`}
+                    to={link.path}
                     className="text-primary-foreground/80 hover:text-primary-foreground transition-colors text-sm"
                   >
-                    {link}
+                    {t(link.nameKey)}
                   </Link>
                 </li>
               ))}
@@ -40,19 +58,17 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
 
           {/* Services */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Our Services</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('footer.services')}</h3>
             <ul className="space-y-3 text-sm text-primary-foreground/80">
-              <li>Home Broadband</li>
-              <li>Business Internet</li>
-              <li>Gaming Packages</li>
-              <li>Enterprise Solutions</li>
-              <li>Fiber Optic Connection</li>
+              {services.map((serviceKey) => (
+                <li key={serviceKey}>{t(serviceKey)}</li>
+              ))}
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h3 className="font-semibold text-lg mb-4">Contact Us</h3>
+            <h3 className="font-semibold text-lg mb-4">{t('footer.contactUs')}</h3>
             <ul className="space-y-4">
               <li className="flex items-center gap-3">
                 <MessageCircle className="w-5 h-5 text-[#25D366]" />
@@ -102,7 +118,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
               rel="noopener noreferrer"
               className="text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors"
             >
-              © {new Date().getFullYear()} ANT Bogura. All rights reserved. | Developed by Rezuwan
+              {t('footer.copyright', { year: new Date().getFullYear() })}
             </a>
           </div>
         </div>
