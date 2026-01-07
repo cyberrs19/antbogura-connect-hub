@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, Zap, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,18 +18,19 @@ const packages = [
   { name: "Enterprise Max", speed: 200, price: 2400, vat: 2520, enterprise: true },
 ];
 
-const features = [
-  "Unlimited Data",
-  "Unlimited BDIX Speed",
-  "4K Streaming Support",
-  "Low Latency Gaming",
-  "24/7 Support",
-  "Free Router Setup",
-];
-
 const Packages = () => {
+  const { t } = useTranslation();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<string | undefined>();
+
+  const features = [
+    t("packages.features.unlimitedData"),
+    t("packages.features.bdixSpeed"),
+    t("packages.features.streaming"),
+    t("packages.features.gaming"),
+    t("packages.features.support"),
+    t("packages.features.router"),
+  ];
 
   const handleOrderClick = (packageName: string) => {
     setSelectedPackage(`${packageName}`);
@@ -41,11 +43,10 @@ const Packages = () => {
       <section className="section-padding bg-gradient-to-br from-background via-cream to-mint">
         <div className="container-custom mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 animate-fade-in">
-            Choose Your <span className="text-primary">Perfect Plan</span>
+            {t("packages.hero.title")} <span className="text-primary">{t("packages.hero.titleHighlight")}</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Simple, transparent pricing with no hidden fees. All packages include 
-            unlimited data and premium features.
+            {t("packages.hero.subtitle")}
           </p>
         </div>
       </section>
@@ -63,17 +64,17 @@ const Packages = () => {
               >
                 {pkg.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
-                    <Star className="w-4 h-4" /> Most Popular
+                    <Star className="w-4 h-4" /> {t("packages.badges.popular")}
                   </div>
                 )}
                 {pkg.gaming && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1 border border-primary/30">
-                    <Zap className="w-4 h-4" /> Gaming
+                    <Zap className="w-4 h-4" /> {t("packages.badges.gaming")}
                   </div>
                 )}
                 {pkg.enterprise && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
-                    Enterprise
+                    {t("packages.badges.enterprise")}
                   </div>
                 )}
 
@@ -89,10 +90,10 @@ const Packages = () => {
                   <div className="mb-6">
                     <p className="text-3xl font-bold text-foreground">
                       ৳{pkg.vat}
-                      <span className="text-sm text-muted-foreground font-normal">/month</span>
+                      <span className="text-sm text-muted-foreground font-normal">{t("packages.perMonth")}</span>
                     </p>
                     <p className="text-sm text-primary font-medium">
-                      VAT Included
+                      {t("packages.vatIncluded")}
                     </p>
                   </div>
 
@@ -113,7 +114,7 @@ const Packages = () => {
                     size="lg"
                     onClick={() => handleOrderClick(`${pkg.name} - ${pkg.speed} Mbps - ৳${pkg.vat}/month`)}
                   >
-                    Get Started
+                    {t("packages.getStarted")}
                   </Button>
                 </CardFooter>
               </Card>
@@ -126,17 +127,17 @@ const Packages = () => {
       <section className="section-padding bg-card">
         <div className="container-custom mx-auto">
           <h2 className="text-3xl font-bold text-center text-foreground mb-8">
-            Package Comparison
+            {t("packages.comparison.title")}
           </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full border-collapse bg-background rounded-xl overflow-hidden shadow-lg">
               <thead>
                 <tr className="bg-primary text-primary-foreground">
-                  <th className="px-6 py-4 text-left font-semibold">Package</th>
-                  <th className="px-6 py-4 text-center font-semibold">Speed</th>
-                  <th className="px-6 py-4 text-center font-semibold">Price (VAT Included)</th>
-                  <th className="px-6 py-4 text-center font-semibold">Action</th>
+                  <th className="px-6 py-4 text-left font-semibold">{t("packages.comparison.package")}</th>
+                  <th className="px-6 py-4 text-center font-semibold">{t("packages.comparison.speed")}</th>
+                  <th className="px-6 py-4 text-center font-semibold">{t("packages.comparison.price")}</th>
+                  <th className="px-6 py-4 text-center font-semibold">{t("packages.comparison.action")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,7 +153,7 @@ const Packages = () => {
                         <span className="font-medium text-foreground">{pkg.name}</span>
                         {pkg.popular && (
                           <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
-                            Popular
+                            {t("packages.badges.popular")}
                           </span>
                         )}
                       </div>
@@ -167,7 +168,7 @@ const Packages = () => {
                         size="sm"
                         onClick={() => handleOrderClick(`${pkg.name} - ${pkg.speed} Mbps - ৳${pkg.vat}/month`)}
                       >
-                        Order Now
+                        {t("packages.comparison.orderNow")}
                       </Button>
                     </td>
                   </tr>
@@ -182,15 +183,14 @@ const Packages = () => {
       <section className="section-padding bg-primary">
         <div className="container-custom mx-auto text-center">
           <h2 className="text-3xl font-bold text-primary-foreground mb-4">
-            Need Help Choosing?
+            {t("packages.needHelp.title")}
           </h2>
           <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
-            Our team is ready to help you find the perfect package for your needs. 
-            Contact us for a free consultation.
+            {t("packages.needHelp.subtitle")}
           </p>
           <Button asChild variant="secondary" size="xl">
             <a href="https://wa.me/8801332147787" target="_blank" rel="noopener noreferrer">
-              Chat With Us
+              {t("packages.needHelp.chatWithUs")}
             </a>
           </Button>
         </div>
