@@ -10,7 +10,6 @@ const navLinks = [
   { nameKey: "nav.packages", path: "/packages" },
   { nameKey: "nav.coverage", path: "/coverage" },
   { nameKey: "nav.ftpLiveTv", path: "/ftp-live-tv" },
-  { nameKey: "nav.speedTest", path: "/speed-test" },
   { nameKey: "nav.billPayment", path: "/bill-payment" },
   { nameKey: "nav.about", path: "/about" },
   { nameKey: "nav.support", path: "/support" },
