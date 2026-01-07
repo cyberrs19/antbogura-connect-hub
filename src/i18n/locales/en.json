@@ -4,7 +4,6 @@
     "packages": "Packages",
     "coverage": "Coverage",
     "ftpLiveTv": "FTP & Live TV",
-    "speedTest": "Speed Test",
     "billPayment": "Bill Payment",
     "about": "About",
     "support": "Support",
@@ -503,46 +502,5 @@
     "sortBy": "Sort By",
     "noResults": "No results found",
     "required": "Required"
-  },
-  "speedTest": {
-    "title": "Speed Test",
-    "heroTitle": "Test Your",
-    "heroHighlight": "Internet Speed",
-    "heroSubtitle": "Check your download and upload speeds with our free speed test tool. Get accurate results in seconds.",
-    "ready": "Ready to test",
-    "startTest": "Start Test",
-    "stopTest": "Stop Test",
-    "testAgain": "Test Again",
-    "testing": "Testing...",
-    "download": "Download",
-    "upload": "Upload",
-    "ping": "Ping",
-    "jitter": "Jitter",
-    "mbps": "Mbps",
-    "ms": "ms",
-    "tipsTitle": "Tips for Accurate Results",
-    "tips": {
-      "wifi": {
-        "title": "Use Wired Connection",
-        "desc": "For most accurate results, connect your device directly to the router with an ethernet cable."
-      },
-      "device": {
-        "title": "Close Other Apps",
-        "desc": "Close applications and browser tabs that might be using your internet connection."
-      },
-      "router": {
-        "title": "Restart Router",
-        "desc": "If speeds seem slow, try restarting your router before testing again."
-      },
-      "background": {
-        "title": "Stop Downloads",
-        "desc": "Pause any ongoing downloads or streaming on other devices."
-      }
-    },
-    "understandingTitle": "Understanding Your Results",
-    "downloadExplain": "Download speed measures how fast data is transferred from the internet to your device. Higher speeds mean faster loading of websites, videos, and file downloads.",
-    "uploadExplain": "Upload speed measures how fast data is transferred from your device to the internet. Important for video calls, uploading files, and online gaming.",
-    "pingExplain": "Ping (latency) measures the response time between your device and the server. Lower ping means more responsive connections, crucial for gaming and video calls.",
-    "jitterExplain": "Jitter measures the variation in ping times. Low jitter means a more stable connection, which is important for real-time applications like video calls."
   }
 }

@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import Packages from "./pages/Packages";
 import Coverage from "./pages/Coverage";
 import FtpLiveTv from "./pages/FtpLiveTv";
-import SpeedTest from "./pages/SpeedTest";
+
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Support from "./pages/Support";
@@ -38,7 +38,7 @@ const App = () => (
             <Route path="/packages" element={<Packages />} />
             <Route path="/coverage" element={<Coverage />} />
             <Route path="/ftp-live-tv" element={<FtpLiveTv />} />
-            <Route path="/speed-test" element={<SpeedTest />} />
+            
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/support" element={<Support />} />
